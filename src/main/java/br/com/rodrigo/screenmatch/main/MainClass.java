@@ -1,7 +1,5 @@
 package br.com.rodrigo.screenmatch.main;
 
-import br.com.rodrigo.screenmatch.ScreenmatchApplication;
-import br.com.rodrigo.screenmatch.model.DadosEpisodio;
 import br.com.rodrigo.screenmatch.model.DadosSerie;
 import br.com.rodrigo.screenmatch.model.DadosTemporada;
 import br.com.rodrigo.screenmatch.service.ConsumoApi;
