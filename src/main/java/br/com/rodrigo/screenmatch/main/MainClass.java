@@ -1,13 +1,19 @@
 package br.com.rodrigo.screenmatch.main;
 
+import br.com.rodrigo.screenmatch.model.DadosEpisodio;
 import br.com.rodrigo.screenmatch.model.DadosSerie;
 import br.com.rodrigo.screenmatch.model.DadosTemporada;
+import br.com.rodrigo.screenmatch.model.Episodio;
 import br.com.rodrigo.screenmatch.service.ConsumoApi;
 import br.com.rodrigo.screenmatch.service.ConverteDados;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class MainClass {
 
@@ -33,7 +39,40 @@ public class MainClass {
 			temporadas.add(dadosTemporada);
 		}
 
-		temporadas.forEach(System.out::println);
         temporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
+
+        List<DadosEpisodio> dadosEpisodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream())
+                .collect(Collectors.toList());
+
+        System.out.println("Top 5");
+        dadosEpisodios.stream()
+                .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+                .limit(5)
+                .forEach(System.out::println);
+
+        List<Episodio> episodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream()
+                        .map(d -> new Episodio(t.numeroTemp(), d)))
+                .collect(Collectors.toList());
+
+        episodios.forEach(System.out::println);
+
+        System.out.println("Digite um ano a partir de quando quer ver os episódios:");
+        var ano = input.nextInt();
+        input.nextLine();
+
+        LocalDate dataBusca = LocalDate.of(ano, 1, 1);
+
+        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        episodios.stream()
+                .filter(e -> e.getDataLancamento() != null && e.getDataLancamento().isAfter(dataBusca))
+                .forEach(e -> System.out.println(
+                        "Temporada: " + e.getTemporada() +
+                                " | Episódio:" + e.getTitulo()+
+                                " | Data lançamento:" + e.getDataLancamento().format(formatador)
+                ));
+
     }
 }
