@@ -1,15 +1,24 @@
 package br.com.rodrigo.screenmatch.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+@Entity
+@Table(name = "episodes")
 public class Episode {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private Integer season;
     private String title;
     private Integer epNumber;
     private double rating;
     private LocalDate releaseDate;
+    @ManyToOne
+    private Series series;
 
     public Episode(Integer seasonNumber, EpisodeData episodeData) {
         this.season = seasonNumber;
@@ -27,6 +36,24 @@ public class Episode {
         } catch (DateTimeParseException e){
             this.releaseDate = null;
         }
+    }
+
+    public Episode() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Series getSeries() {
+        return series;
+    }
+
+    public void setSeries(Series series) {
+        this.series = series;
     }
 
     public Integer getSeason() {

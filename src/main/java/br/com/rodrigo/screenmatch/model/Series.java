@@ -1,9 +1,10 @@
 package br.com.rodrigo.screenmatch.model;
 
 import br.com.rodrigo.screenmatch.service.ChatGPTQuery;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 
 @Entity
@@ -21,6 +22,8 @@ public class Series {
     private String actors;
     private String poster;
     private String plot;
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Episode> episodeList = new ArrayList<>();
 
     public Series(SeriesData seriesData){
         this.title = seriesData.title();
@@ -32,8 +35,15 @@ public class Series {
         this.plot = ChatGPTQuery.getTranslation(seriesData.plot()).trim() ;
     }
 
-    public Series() {
+    public Series() {}
 
+    public List<Episode> getEpisodeList() {
+        return episodeList;
+    }
+
+    public void setEpisodeList(List<Episode> episodeList) {
+        episodeList.forEach(e -> e.setSeries(this));
+        this.episodeList = episodeList;
     }
 
     public Long getId() {
@@ -109,6 +119,7 @@ public class Series {
                 ", avaliação = " + rating +
                 ", atores = '" + actors + '\'' +
                 ", poster = '" + poster + '\'' +
-                ", sinopse = '" + plot + '\'';
+                ", sinopse = '" + plot + '\'' +
+                ", episodios = '" + episodeList + '\'';
     }
 }
